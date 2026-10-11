@@ -1,0 +1,7 @@
+.gradle/
+.idea/
+local.properties
+app/build/
+build/
+app/src/main/assets/wordcraft/*
+!app/src/main/assets/wordcraft/README.txt
