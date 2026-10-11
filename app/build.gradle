@@ -1,0 +1,41 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'dev.community.wordcraft'
+    compileSdk 35
+
+    defaultConfig {
+        applicationId 'dev.community.wordcraft'
+        minSdk 29
+        targetSdk 34
+        versionCode 4
+        versionName '0.4.0-unofficial.1'
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    // The WebAssembly binary needs an unmodified MIME/type response.
+    androidResources {
+        noCompress += ['wasm']
+    }
+}
+
+tasks.register('verifyWebAssets') {
+    doLast {
+        def dir = file('src/main/assets/wordcraft')
+        if (!file('src/main/assets/wordcraft/index.html').isFile()) {
+            throw new GradleException('Missing bundled WordCraft web build. Run scripts/prepare-web.sh (or .ps1) first.')
+        }
+        if (fileTree(dir).matching { include '**/*.wasm' }.isEmpty()) {
+            throw new GradleException('WordCraft web build contains no .wasm file. Is the release asset complete?')
+        }
+    }
+}
+tasks.named('preBuild') {
+    dependsOn tasks.named('verifyWebAssets')
+}
